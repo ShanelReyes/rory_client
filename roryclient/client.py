@@ -2,7 +2,7 @@ import requests as R
 import time as T
 from option import Result,Ok,Err
 from abc import ABC
-from typing import List,Tuple
+from typing import List,Optional
 from dataclasses import dataclass,field
 
 @dataclass
@@ -22,8 +22,20 @@ class KnnPredictResponse:
     service_time_predict:float
 
 @dataclass
+class KnnResponse:
+    algorithm: str
+    label_vector:List[int]
+    worker_id:str
+    service_time_manager:float
+    service_time_worker:float
+    service_time_client:float
+    service_time_predict:float
+    service_time_train: float
+
+
+@dataclass
 class SknnTrainResponse:
-    response_time:str
+    response_time:float
     encrypted_model_shape:str
     encrypted_model_dtype:str
     algorithm:str
@@ -458,7 +470,7 @@ class RoryClient(object):
         record_test_id:str,
         record_test_filename:str,
         extension:str="npy" 
-        )->Result[KnnPredictResponse, Exception]:
+        )->Result[KnnResponse, Exception]:
         try:
             knn_train_result = self.knn_train(
                 model_id= model_id,
@@ -479,7 +491,22 @@ class RoryClient(object):
                 extension=extension,
                 model_labels_shape=str(tuple(train_response.model_labels_shape))
             )
-            return predict_result
+
+            if predict_result.is_err:
+                return predict_result
+            predict_response = predict_result.unwrap()
+
+            return KnnResponse(
+                service_time_client=predict_response.service_time_client,
+                algorithm="KNN",
+                label_vector=predict_response.label_vector,
+                service_time_manager=predict_response.service_time_manager,
+                service_time_predict=predict_response.service_time_predict,
+                service_time_worker=predict_response.service_time_worker,
+                worker_id=predict_response.worker_id,
+                # Train
+                service_time_train=train_response.response_time,
+            )
         except Exception as e:
             return Err(e)
 
@@ -545,7 +572,7 @@ class RoryClient(object):
         record_test_filename:str,       
         num_chunks:int=2,
         extension:str="npy",
-        )->Result[KnnPredictResponse,Exception]:
+        )->Result[KnnResponse,Exception]:
         try:
             sknn_train_result = self.sknn_train(
                 model_id              = model_id,
@@ -570,7 +597,23 @@ class RoryClient(object):
                 encrypted_model_dtype = train_response.encrypted_model_dtype,
                 model_labels_shape= str(tuple(train_response.model_labels_shape))
             )
-            return predict_result
+
+            if predict_result.is_err:
+                return predict_result
+            predict_response = predict_result.unwrap()
+
+            return KnnResponse(
+                service_time_client=predict_response.service_time_client,
+                algorithm="SKNN",
+                label_vector=predict_response.label_vector,
+                service_time_manager=predict_response.service_time_manager,
+                service_time_predict=predict_response.service_time_predict,
+                service_time_worker=predict_response.service_time_worker,
+                worker_id=predict_response.worker_id,
+                # Train
+                service_time_train=train_response.response_time,
+            )
+            # return predict_result
         except Exception as e:
             return Err(e)    
 
@@ -634,7 +677,7 @@ class RoryClient(object):
         record_test_filename:str,
         num_chunks:int=2,
         extension:str="npy",
-        )->Result[KnnPredictResponse, Exception]:
+        )->Result[KnnResponse, Exception]:
         try:
             sknn_train_result = self.sknn_pqc_train(
                 model_id              = model_id,
@@ -657,7 +700,22 @@ class RoryClient(object):
                 encrypted_model_shape = train_response.encrypted_model_shape,
                 encrypted_model_dtype = train_response.encrypted_model_dtype
             )
-            return predict_result
+            if predict_result.is_err:
+                return predict_result
+            predict_response = predict_result.unwrap()
+
+            return KnnResponse(
+                service_time_client=predict_response.service_time_client,
+                algorithm="SKNNPQC",
+                label_vector=predict_response.label_vector,
+                service_time_manager=predict_response.service_time_manager,
+                service_time_predict=predict_response.service_time_predict,
+                service_time_worker=predict_response.service_time_worker,
+                worker_id=predict_response.worker_id,
+                # Train
+                service_time_train=train_response.response_time,
+            )
+            # return predict_result
         except Exception as e:
             return Err(e)
 
