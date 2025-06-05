@@ -65,7 +65,7 @@ class NncResponse:
     response_time_clustering:float
 
 class RoryClient(object):
-    def __init__(self, hostname:str="localhost",port:int = 9000):
+    def __init__(self, hostname:str="localhost",port:int = 9000,timeout:int= 120):
         self.uri                = "http://{}:{}".format(hostname,port)
         self.clustering_url     = "{}/clustering".format(self.uri)
         self.classification_url = f"{self.uri}/classification"
@@ -80,6 +80,7 @@ class RoryClient(object):
         self.sknn_url           = f"{self.classification_url}/sknn"
         self.knn_pqc_url        = f"{self.classification_url}/pqc/knn"
         self.sknn_pqc_url       = f"{self.classification_url}/pqc/sknn"
+        self.timeout = timeout
 
     def kmeans(self, 
             plaintext_matrix_id:str,
@@ -117,7 +118,7 @@ class RoryClient(object):
                 "Num-Chunks":str(num_chunks)
             }
             
-            response = R.post(f"{self.kmeans_url}", headers = headers)
+            response = R.post(f"{self.kmeans_url}", headers = headers,timeout=self.timeout)
             response.raise_for_status()
             data = KmeansResponse(**response.json())
 
@@ -168,7 +169,7 @@ class RoryClient(object):
                 "Plaintext-Matrix-Id": plaintext_matrix_id,
             }
             
-            response = R.post(f"{self.skmeans_url}", headers=headers)
+            response = R.post(f"{self.skmeans_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KmeansResponse(**response.json())
             return Ok(data)
@@ -221,7 +222,7 @@ class RoryClient(object):
                 "Sens": str(sens)
             }
             
-            response = R.post(f"{self.dbskmeans_url}", headers=headers)
+            response = R.post(f"{self.dbskmeans_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KmeansResponse(**response.json())
             return Ok(data)
@@ -270,7 +271,7 @@ class RoryClient(object):
                 "Plaintext-Matrix-Filename": plaintext_matrix_filename,
                 "Plaintext-Matrix-Id": plaintext_matrix_id,
             }
-            response = R.post(f"{self.skmeans_pqc_url}", headers=headers)
+            response = R.post(f"{self.skmeans_pqc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KmeansResponse(**response.json())
             return Ok(data)
@@ -322,7 +323,7 @@ class RoryClient(object):
                 "Plaintext-Matrix-Id": plaintext_matrix_id,
                 "Sens": str(sens)
             }  
-            response = R.post(f"{self.dbskmeans_pqc_url}", headers=headers)
+            response = R.post(f"{self.dbskmeans_pqc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KmeansResponse(**response.json())
             return Ok(data)
@@ -362,7 +363,7 @@ class RoryClient(object):
                 "Plaintext-Matrix-Id": plaintext_matrix_id,
                 "Threshold": str(threshold),
             }
-            response = R.post(f"{self.nnc_url}", headers=headers)
+            response = R.post(f"{self.nnc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = NncResponse(**response.json())
             return Ok(data)
@@ -408,7 +409,7 @@ class RoryClient(object):
                 "Num-Chunks": str(num_chunks),
                 "Sens": str(sens)
             }
-            response = R.post(f"{self.dbsnnc_url}", headers=headers)
+            response = R.post(f"{self.dbsnnc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = NncResponse(**response.json())
             return Ok(data)
@@ -430,7 +431,7 @@ class RoryClient(object):
                 "Model-Labels-Filename": model_labels_filename,
                 "Extension":extension
             }
-            response = R.post(f"{self.knn_url}/train", headers=headers)
+            response = R.post(f"{self.knn_url}/train", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KnnTrainResponse(**response.json())
             return Ok(data)
@@ -456,7 +457,7 @@ class RoryClient(object):
                 "Extension":extension,
                 "Model-Labels-Shape":model_labels_shape
             }
-            response = R.post(f"{self.knn_url}/predict", headers=headers)
+            response = R.post(f"{self.knn_url}/predict", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KnnPredictResponse(**response.json())
             return Ok(data)
@@ -525,7 +526,7 @@ class RoryClient(object):
                 "Num-Chunks":str(num_chunks),
                 "Extension":extension
             }
-            response = R.post(f"{self.sknn_url}/train", headers=headers)
+            response = R.post(f"{self.sknn_url}/train", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = SknnTrainResponse(**response.json())
             return Ok(data)
@@ -557,7 +558,7 @@ class RoryClient(object):
                 "Encrypted-Model-Dtype":encrypted_model_dtype,
                 "Model-Labels-Shape": model_labels_shape
             }
-            response = R.post(f"{self.sknn_url}/predict", headers=headers)
+            response = R.post(f"{self.sknn_url}/predict", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KnnPredictResponse(**response.json())
             return Ok(data)
@@ -632,7 +633,7 @@ class RoryClient(object):
                 "Num-Chunks":str(num_chunks),
                 "Extension":extension
             }
-            response = R.post(f"{self.sknn_pqc_url}/train", headers=headers)
+            response = R.post(f"{self.sknn_pqc_url}/train", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = SknnTrainResponse(**response.json())
             return Ok(data)
@@ -662,7 +663,7 @@ class RoryClient(object):
                 "Encrypted-Model-Shape": encrypted_model_shape,
                 "Encrypted-Model-Dtype":encrypted_model_dtype
             }
-            response = R.post(f"{self.sknn_pqc_url}/predict", headers=headers)
+            response = R.post(f"{self.sknn_pqc_url}/predict", headers=headers,timeout=self.timeout)
             response.raise_for_status()
             data = KnnPredictResponse(**response.json())
             return Ok(data)
