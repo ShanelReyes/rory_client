@@ -497,7 +497,7 @@ class RoryClient(object):
                 return predict_result
             predict_response = predict_result.unwrap()
 
-            return KnnResponse(
+            return Ok(KnnResponse(
                 service_time_client=predict_response.service_time_client,
                 algorithm="KNN",
                 label_vector=predict_response.label_vector,
@@ -506,7 +506,8 @@ class RoryClient(object):
                 service_time_worker=predict_response.service_time_worker,
                 worker_id=predict_response.worker_id,
                 # Train
-                service_time_train=train_response.response_time,
+                service_time_train=train_response.response_time
+                )
             )
         except Exception as e:
             return Err(e)
@@ -603,7 +604,7 @@ class RoryClient(object):
                 return predict_result
             predict_response = predict_result.unwrap()
 
-            return KnnResponse(
+            return Ok(KnnResponse(
                 service_time_client=predict_response.service_time_client,
                 algorithm="SKNN",
                 label_vector=predict_response.label_vector,
@@ -612,7 +613,7 @@ class RoryClient(object):
                 service_time_worker=predict_response.service_time_worker,
                 worker_id=predict_response.worker_id,
                 # Train
-                service_time_train=train_response.response_time,
+                service_time_train=train_response.response_time,)
             )
             # return predict_result
         except Exception as e:
@@ -705,7 +706,7 @@ class RoryClient(object):
                 return predict_result
             predict_response = predict_result.unwrap()
 
-            return KnnResponse(
+            return Ok(KnnResponse(
                 service_time_client=predict_response.service_time_client,
                 algorithm="SKNNPQC",
                 label_vector=predict_response.label_vector,
@@ -714,7 +715,7 @@ class RoryClient(object):
                 service_time_worker=predict_response.service_time_worker,
                 worker_id=predict_response.worker_id,
                 # Train
-                service_time_train=train_response.response_time,
+                service_time_train=train_response.response_time,)
             )
             # return predict_result
         except Exception as e:
