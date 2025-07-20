@@ -1,7 +1,26 @@
 import pytest
 from roryclient.client import RoryClient
 import time as T
+from roryclient.models import SegmentDTO
 client = RoryClient(hostname="localhost",port=3001)
+
+
+# @pytest.mark.skip("")
+def test_segment():
+    res = client.segment(
+        dto = SegmentDTO(
+            ball_id        = "bxx",
+            bucket_id      = "rory",
+            filename       = "X.npy",
+            max_attempts   = 10,
+            max_backoff    = 5,
+            row_chunk_size = 100,
+            tags           = {},
+            timeout        = 120
+        )
+    )
+    assert res.is_ok
+    print(res)
 
 @pytest.mark.skip("Kmeans algorithm")
 def test_kmeans():

@@ -1,68 +1,38 @@
 import requests as R
 import time as T
 from option import Result,Ok,Err
-from abc import ABC
-from typing import List,Optional
-from dataclasses import dataclass,field
-
-@dataclass
-class KnnTrainResponse:
-    response_time:float
-    algorithm:str
-    model_labels_shape:List[int]
-
-@dataclass
-class KnnPredictResponse:
-    label_vector:List[int]
-    algorithm:str
-    worker_id:str
-    service_time_manager:float
-    service_time_worker:float
-    service_time_client:float
-    service_time_predict:float
-
-@dataclass
-class KnnResponse:
-    algorithm: str
-    label_vector:List[int]
-    worker_id:str
-    service_time_manager:float
-    service_time_worker:float
-    service_time_client:float
-    service_time_predict:float
-    service_time_train: float
+from roryclient.models import *
 
 
-@dataclass
-class SknnTrainResponse:
-    response_time:float
-    encrypted_model_shape:str
-    encrypted_model_dtype:str
-    algorithm:str
-    model_labels_shape:List[int]
 
+class RoryOrchestratorClient:
+    def __init__(self, hostname:str="localhost",port:int = 6000,timeout:int= 120):
+        self.uri                = "http://{}:{}".format(hostname,port)
+        self.orchestrator_url     = "{}/orchestration".format(self.uri)
+        self.timeout = timeout
 
-@dataclass
-class KmeansResponse:
-    label_vector:List[int]
-    iterations:int
-    algorithm:str
-    worker_id:str
-    service_time_manager:float
-    service_time_worker:float
-    service_time_client:float
-    response_time_clustering:float
+    def orchestrate(self,policy:Policy):
+        try:
+            res = R.post(f"{self.orchestrator_url}",json=Policy.model_dump())
+            res.raise_for_status()
+        except Exception as e:
+            return Err(e)
 
+class RoryWorker(object):
+    def __init__(self, hostname:str="localhost",port:int = 9000,timeout:int= 120):
+        self.uri                = "http://{}:{}".format(hostname,port)
+        self.distributed_url    = f"{self.uri}/distributed"
 
-@dataclass
-class NncResponse:
-    label_vector:List[int]
-    algorithm:str
-    worker_id:str
-    service_time_manager:float
-    service_time_worker:float
-    service_time_client:float
-    response_time_clustering:float
+        self.timeout = timeout
+    def encrypt(self,dto:EncryptDTO):
+        try:
+            res=  R.post(f"{self.distributed_url}/encrypt", json=dto.model_dump())
+            res.raise_for_status()
+            response_json = res.json()
+            print(response_json)
+            return Ok(response_json)
+        except Exception as e:
+            return Err(e)
 
 class RoryClient(object):
     def __init__(self, hostname:str="localhost",port:int = 9000,timeout:int= 120):
@@ -80,8 +50,17 @@ class RoryClient(object):
         self.sknn_url           = f"{self.classification_url}/sknn"
         self.knn_pqc_url        = f"{self.classification_url}/pqc/knn"
         self.sknn_pqc_url       = f"{self.classification_url}/pqc/sknn"
+        self.distributed_url    = f"{self.uri}/distributed"
         self.timeout = timeout
 
+    def segment(self,dto:SegmentDTO):
+        try:
+            res=  R.post(f"{self.distributed_url}/segment", json=dto.model_dump())
+            res.raise_for_status()
+            response_json = res.json()
+            return Ok(SegementResponseDTO.model_validate(response_json))
+        except Exception as e:
+            return Err(e)
     def kmeans(self, 
             plaintext_matrix_id:str,
             plaintext_matrix_filename:str, 
@@ -120,7 +99,7 @@ class RoryClient(object):
             
             response = R.post(f"{self.kmeans_url}", headers = headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KmeansResponse(**response.json())
+            data = KmeansResponse.model_validate(response.json())
 
             return Ok(data)
         except Exception as e:
@@ -171,7 +150,7 @@ class RoryClient(object):
             
             response = R.post(f"{self.skmeans_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KmeansResponse(**response.json())
+            data = KmeansResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -224,7 +203,7 @@ class RoryClient(object):
             
             response = R.post(f"{self.dbskmeans_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KmeansResponse(**response.json())
+            data = KmeansResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -273,7 +252,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.skmeans_pqc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KmeansResponse(**response.json())
+            data = KmeansResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -325,7 +304,7 @@ class RoryClient(object):
             }  
             response = R.post(f"{self.dbskmeans_pqc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KmeansResponse(**response.json())
+            data = KmeansResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -365,7 +344,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.nnc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = NncResponse(**response.json())
+            data = NncResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -411,7 +390,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.dbsnnc_url}", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = NncResponse(**response.json())
+            data = NncResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -433,7 +412,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.knn_url}/train", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KnnTrainResponse(**response.json())
+            data = KnnTrainResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -459,7 +438,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.knn_url}/predict", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KnnPredictResponse(**response.json())
+            data = KnnPredictResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)  
@@ -497,17 +476,19 @@ class RoryClient(object):
                 return predict_result
             predict_response = predict_result.unwrap()
 
-            return Ok(KnnResponse(
-                service_time_client=predict_response.service_time_client,
-                algorithm="KNN",
-                label_vector=predict_response.label_vector,
-                service_time_manager=predict_response.service_time_manager,
-                service_time_predict=predict_response.service_time_predict,
-                service_time_worker=predict_response.service_time_worker,
-                worker_id=predict_response.worker_id,
-                # Train
-                service_time_train=train_response.response_time
-                )
+            return Ok(KnnResponse.model_validate(
+                {
+
+                "service_time_client":predict_response.service_time_client,
+                "algorithm":"KNN",
+                "label_vector":predict_response.label_vector,
+                "service_time_manager":predict_response.service_time_manager,
+                "service_time_predict":predict_response.service_time_predict,
+                "service_time_worker":predict_response.service_time_worker,
+                "worker_id":predict_response.worker_id,
+                "service_time_train":train_response.response_time
+                }
+            )
             )
         except Exception as e:
             return Err(e)
@@ -529,7 +510,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.sknn_url}/train", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = SknnTrainResponse(**response.json())
+            data = SknnTrainResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -561,7 +542,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.sknn_url}/predict", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KnnPredictResponse(**response.json())
+            data = KnnPredictResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e) 
@@ -604,17 +585,19 @@ class RoryClient(object):
                 return predict_result
             predict_response = predict_result.unwrap()
 
-            return Ok(KnnResponse(
-                service_time_client=predict_response.service_time_client,
-                algorithm="SKNN",
-                label_vector=predict_response.label_vector,
-                service_time_manager=predict_response.service_time_manager,
-                service_time_predict=predict_response.service_time_predict,
-                service_time_worker=predict_response.service_time_worker,
-                worker_id=predict_response.worker_id,
-                # Train
-                service_time_train=train_response.response_time,)
-            )
+            return Ok(KnnResponse.model_validate(
+                {
+                    "service_time_client":predict_response.service_time_client,
+                    "algorithm":"SKNN",
+                    "label_vector":predict_response.label_vector,
+                    "service_time_manager":predict_response.service_time_manager,
+                    "service_time_predict":predict_response.service_time_predict,
+                    "service_time_worker":predict_response.service_time_worker,
+                    "worker_id":predict_response.worker_id,
+                    "service_time_train":train_response.response_time
+
+                }
+            ))
             # return predict_result
         except Exception as e:
             return Err(e)    
@@ -636,7 +619,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.sknn_pqc_url}/train", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = SknnTrainResponse(**response.json())
+            data = SknnTrainResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -666,7 +649,7 @@ class RoryClient(object):
             }
             response = R.post(f"{self.sknn_pqc_url}/predict", headers=headers,timeout=self.timeout)
             response.raise_for_status()
-            data = KnnPredictResponse(**response.json())
+            data = KnnPredictResponse.model_validate(response.json())
             return Ok(data)
         except Exception as e:
             return Err(e)
@@ -706,17 +689,19 @@ class RoryClient(object):
                 return predict_result
             predict_response = predict_result.unwrap()
 
-            return Ok(KnnResponse(
-                service_time_client=predict_response.service_time_client,
-                algorithm="SKNNPQC",
-                label_vector=predict_response.label_vector,
-                service_time_manager=predict_response.service_time_manager,
-                service_time_predict=predict_response.service_time_predict,
-                service_time_worker=predict_response.service_time_worker,
-                worker_id=predict_response.worker_id,
-                # Train
-                service_time_train=train_response.response_time,)
-            )
+            return Ok(KnnResponse.model_validate(
+            {
+
+                "service_time_client":predict_response.service_time_client,
+                "algorithm":"SKNNPQC",
+                "label_vector":predict_response.label_vector,
+                "service_time_manager":predict_response.service_time_manager,
+                "service_time_predict":predict_response.service_time_predict,
+                "service_time_worker":predict_response.service_time_worker,
+                "worker_id":predict_response.worker_id,
+                "service_time_train":train_response.response_time
+            }
+            ))
             # return predict_result
         except Exception as e:
             return Err(e)
