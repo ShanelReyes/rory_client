@@ -12,6 +12,7 @@ option = "^2.1.0"
 
 
 # mictlanx = "^0.0.161"
+pydantic = "^2.11.7"
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 
