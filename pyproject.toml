@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "roryclient"
-version = "0.1.4"
+version = "0.1.6"
 description = ""
 authors = ["ShanelReyes <shanelreyesp@gmail.com>"]
 readme = "README.md"
