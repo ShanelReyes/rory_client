@@ -7,7 +7,13 @@ class EncryptDTO(BaseModel):
     chunk_indexes:List[int]
     algorithm:str
     security_level: Optional[int] = 128
-    
+class KMeansDTO(BaseModel):
+    bucket_id: str
+    ball_id: str
+    chunk_indexes: List[int]
+    n_clusters: int
+    random_state: Optional[int] = None
+  
 class SegementResponseDTO(BaseModel):
     task_id:str
     message: Any
