@@ -1,7 +1,47 @@
 import pytest
-from roryclient.client import RoryClient
+from roryclient.client import RoryClient,RoryOrchestrator
 import time as T
+from roryclient.models import SegmentDTO
 client = RoryClient(hostname="localhost",port=3001)
+orchestrator = RoryOrchestrator(hostname="localhost", port=6000)
+
+def test_mark_tasks_as_completed():
+    result = orchestrator.mark_task_as_completed(task_id="1")
+def test_get_mark_tasks_as_completed():
+    result = orchestrator.get_marked_as_completed_tasks()
+    print(result)
+@pytest.mark.skip("")
+def test_get_tasks():
+    result = orchestrator.get_tasks()
+    print(result)
+
+@pytest.mark.skip("")
+def test_get_task_details():
+    result = orchestrator.get_task_details()
+    print(result)
+
+@pytest.mark.skip("")
+def test_get_completed_tasks():
+    result = orchestrator.get_completed_tasks()
+    print(result)
+
+
+@pytest.mark.skip("")
+def test_segment():
+    res = client.segment(
+        dto = SegmentDTO(
+            ball_id        = "bxx",
+            bucket_id      = "rory",
+            filename       = "X.npy",
+            max_attempts   = 10,
+            max_backoff    = 5,
+            row_chunk_size = 100,
+            tags           = {},
+            timeout        = 120
+        )
+    )
+    assert res.is_ok
+    print(res)
 
 @pytest.mark.skip("Kmeans algorithm")
 def test_kmeans():

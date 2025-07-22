@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "roryclient"
-version = "0.1.6"
+version = "0.1.9"
 description = ""
 authors = ["ShanelReyes <shanelreyesp@gmail.com>"]
 readme = "README.md"
@@ -12,6 +12,7 @@ option = "^2.1.0"
 
 
 # mictlanx = "^0.0.161"
+pydantic = "^2.11.7"
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.4"
 
