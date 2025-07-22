@@ -1,11 +1,24 @@
 import pytest
-from roryclient.client import RoryClient
+from roryclient.client import RoryClient,RoryOrchestrator
 import time as T
 from roryclient.models import SegmentDTO
 client = RoryClient(hostname="localhost",port=3001)
+orchestrator = RoryOrchestrator(hostname="localhost", port=6000)
+
+def test_get_tasks():
+    result = orchestrator.get_tasks()
+    print(result)
+
+def test_get_task_details():
+    result = orchestrator.get_task_details()
+    print(result)
+
+def test_get_completed_tasks():
+    result = orchestrator.get_completed_tasks()
+    print(result)
 
 
-# @pytest.mark.skip("")
+@pytest.mark.skip("")
 def test_segment():
     res = client.segment(
         dto = SegmentDTO(

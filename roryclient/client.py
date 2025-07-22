@@ -5,7 +5,7 @@ from roryclient.models import *
 
 
 
-class RoryOrchestratorClient:
+class RoryOrchestrator:
     def __init__(self, hostname:str="localhost",port:int = 6000,timeout:int= 120):
         self.uri                = "http://{}:{}".format(hostname,port)
         self.orchestrator_url     = "{}/orchestration".format(self.uri)
@@ -15,6 +15,53 @@ class RoryOrchestratorClient:
         try:
             res = R.post(f"{self.orchestrator_url}",json=Policy.model_dump())
             res.raise_for_status()
+        except Exception as e:
+            return Err(e)
+    def mark_task_as_completed(self, task_id: str) -> Result[dict, Exception]:
+        """POST /orchestration/tasks/<task_id>/completed"""
+        try:
+            url = f"{self.uri}/tasks/{task_id}/completed"
+            res = R.post(url, timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+            # return {"error": str(e)}
+
+    def get_tasks(self) -> Result[dict, Exception]:
+        """GET /orchestration/tasks"""
+        try:
+            res = R.get(f"{self.orchestrator_url}/tasks", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+            # return {"error": str(e)}
+
+    def get_task_details(self) -> Result[dict, Exception]:
+        """GET /orchestration/tasks/q"""
+        try:
+            res = R.get(f"{self.orchestrator_url}/tasks/q", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_completed_tasks(self) -> Result[dict, Exception]:
+        """GET /orchestration/tasks/completed"""
+        try:
+            res = R.get(f"{self.orchestrator_url}/tasks/completed", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_completed_task_by_id(self, task_id: str) -> Result[dict, Exception]:
+        """GET /orchestration/tasks/<task_id>/completed"""
+        try:
+            res = R.get(f"{self.orchestrator_url}/tasks/{task_id}/completed", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
         except Exception as e:
             return Err(e)
 
@@ -33,6 +80,52 @@ class RoryWorker(object):
             return Ok(response_json)
         except Exception as e:
             return Err(e)
+    def kmeans(self, dto: KMeansDTO) -> Result[dict, Exception]:
+        """POST /distributed/kmeans"""
+        try:
+            res = R.post(f"{self.distributed_url}/kmeans", json=dto.model_dump(), timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_tasks(self) -> Result[dict, Exception]:
+        """GET /distributed/tasks"""
+        try:
+            res = R.get(f"{self.distributed_url}/tasks", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_task_details(self) -> Result[dict, Exception]:
+        """GET /distributed/tasks/q"""
+        try:
+            res = R.get(f"{self.distributed_url}/tasks/q", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_completed_tasks(self) -> Result[dict, Exception]:
+        """GET /distributed/tasks/completed"""
+        try:
+            res = R.get(f"{self.distributed_url}/tasks/completed", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_completed_task_by_id(self, task_id: str) -> Result[dict, Exception]:
+        """GET /distributed/tasks/<task_id>/completed"""
+        try:
+            url = f"{self.distributed_url}/tasks/{task_id}/completed"
+            res = R.get(url, timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)       
+
 
 class RoryClient(object):
     def __init__(self, hostname:str="localhost",port:int = 9000,timeout:int= 120):
@@ -61,6 +154,45 @@ class RoryClient(object):
             return Ok(SegementResponseDTO.model_validate(response_json))
         except Exception as e:
             return Err(e)
+        
+    def get_tasks(self) -> Result[dict, Exception]:
+        """GET /distributed/tasks"""
+        try:
+            res = R.get(f"{self.distributed_url}/tasks", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_task_details(self) -> Result[dict, Exception]:
+        """GET /distributed/tasks/q"""
+        try:
+            res = R.get(f"{self.distributed_url}/tasks/q", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_completed_tasks(self) -> Result[dict, Exception]:
+        """GET /distributed/tasks/completed"""
+        try:
+            res = R.get(f"{self.distributed_url}/tasks/completed", timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+    def get_completed_task_by_id(self, task_id: str) -> Result[dict, Exception]:
+        """GET /distributed/tasks/<task_id>/completed"""
+        try:
+            url = f"{self.distributed_url}/tasks/{task_id}/completed"
+            res = R.get(url, timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+
+
     def kmeans(self, 
             plaintext_matrix_id:str,
             plaintext_matrix_filename:str, 
