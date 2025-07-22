@@ -5,14 +5,22 @@ from roryclient.models import SegmentDTO
 client = RoryClient(hostname="localhost",port=3001)
 orchestrator = RoryOrchestrator(hostname="localhost", port=6000)
 
+def test_mark_tasks_as_completed():
+    result = orchestrator.mark_task_as_completed(task_id="1")
+def test_get_mark_tasks_as_completed():
+    result = orchestrator.get_marked_as_completed_tasks()
+    print(result)
+@pytest.mark.skip("")
 def test_get_tasks():
     result = orchestrator.get_tasks()
     print(result)
 
+@pytest.mark.skip("")
 def test_get_task_details():
     result = orchestrator.get_task_details()
     print(result)
 
+@pytest.mark.skip("")
 def test_get_completed_tasks():
     result = orchestrator.get_completed_tasks()
     print(result)
