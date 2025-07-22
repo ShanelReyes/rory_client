@@ -20,8 +20,17 @@ class RoryOrchestrator:
     def mark_task_as_completed(self, task_id: str) -> Result[dict, Exception]:
         """POST /orchestration/tasks/<task_id>/completed"""
         try:
-            url = f"{self.uri}/tasks/{task_id}/completed"
+            url = f"{self.orchestrator_url}/tasks/{task_id}/completed"
             res = R.post(url, timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+    def get_marked_as_completed_tasks(self) -> Result[dict, Exception]:
+        """POST /orchestration/tasks/<task_id>/completed"""
+        try:
+            url = f"{self.orchestrator_url}/tasks/marked-completed"
+            res = R.get(url, timeout=self.timeout)
             res.raise_for_status()
             return Ok(res.json())
         except Exception as e:
