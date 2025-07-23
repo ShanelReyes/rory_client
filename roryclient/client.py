@@ -26,6 +26,17 @@ class RoryOrchestrator:
             return Ok(res.json())
         except Exception as e:
             return Err(e)
+    def register_completed_task(self, task:Dict[str,Any]) -> Result[dict, Exception]:
+        """POST /orchestration/tasks/<task_id>/completed"""
+        try:
+            url = f"{self.orchestrator_url}/tasks/registration-completed"
+            res = R.post(url, json=task,timeout=self.timeout)
+            res.raise_for_status()
+            return Ok(res.json())
+        except Exception as e:
+            return Err(e)
+        
+    
     def get_marked_as_completed_tasks(self) -> Result[dict, Exception]:
         """POST /orchestration/tasks/<task_id>/completed"""
         try:
