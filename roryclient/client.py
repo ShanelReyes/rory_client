@@ -91,6 +91,15 @@ class RoryWorker(object):
         self.distributed_url    = f"{self.uri}/distributed"
 
         self.timeout = timeout
+    def stats(self):
+        try:
+            res = R.get(f"{self.distributed_url}/stats")
+            res.raise_for_status()
+            response_json = res.json()
+            return Ok(response_json)
+
+        except Exception as e:
+            return Err(e)
     def encrypt(self,dto:EncryptDTO):
         try:
             res=  R.post(f"{self.distributed_url}/encrypt", json=dto.model_dump())
