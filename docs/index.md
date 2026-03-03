@@ -6,7 +6,7 @@ icon: lucide/home
 <!-- ## Rory:Post-Quantum Privacy-Preserving Data Mining as a Service -->
 
 <p align="center">
-  <img src="/images/logo_rory.svg" alt="Logo" width="50%">
+  <img src="/rory_client/images/logo_rory.svg" alt="Logo" width="50%">
 
   <!-- ![License](https://img.shields.io/badge/license-MIT-blue.svg) -->
   <!-- ![Python](https://img.shields.io/badge/python-3.9%2B-blue) -->

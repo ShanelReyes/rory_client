@@ -7,7 +7,7 @@ nav = [
 ]
 
 site_name = "Rory"
-
+site_url="https://shanelreyes.github.io/rory_client/"
 site_description = "Official documentation for the Rory platform client: architecture, deployment, and usage."
 
 site_author = "ShanelReyes"
@@ -79,3 +79,5 @@ paths = ["roryclient"]
 docstring_style = "google"
 inherited_members = true
 show_source = false
+
+

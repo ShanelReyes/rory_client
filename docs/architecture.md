@@ -4,7 +4,7 @@ icon: material/sitemap
 
 <!-- # Platform Architecture -->
 
-![General Interaction Architecture](images/efficiency_and_elasticit.svg)
+![General Interaction Architecture](/rory_client/images/efficiency_and_elasticit.svg)
 
 ## 1. General Interaction Model
 
@@ -21,7 +21,7 @@ The Rory platform utilizes an elastic model for Privacy-Preserving Data Mining a
 
 <!-- ![Client Component Architecture](images/arquitectura_cliente.svg) -->
 <p align="center">
-  <img src="/images/architecture_client_2.svg" alt="Client Component Architecture" width="50%">
+  <img src="/rory_client/images/architecture_client_2.svg" alt="Client Component Architecture" width="50%">
 </p>
 
 <!-- <p align="center">
@@ -40,7 +40,7 @@ The **Client** component operates on the Data Owner side. It acts as the primary
 ### 2.2 Manager
 
 <p align="center">
-  <img src="/images/architecture_manager_2.svg" alt="Manager Component Architecture" width="50%">
+  <img src="/rory_client/images/architecture_manager_2.svg" alt="Manager Component Architecture" width="50%">
 </p>
 
 The **Manager** component operates on the Service Provider side and plays a fundamental role in the PPDMaaS platform. It acts as the core orchestrator, responsible for managing and coordinating all PPDM-related operations. Its primary functions include task coordination (assigning client requests to workers), load balancing (distributing resources efficiently for elasticity), and CSS interaction (coordinating secure data exchange).
@@ -57,7 +57,7 @@ Its architecture is organized into the following key layers:
 ### 2.3 Worker
 
 <p align="center">
-  <img src="/images/architecture_worker_2.svg" alt="Worker Component Architecture" width="50%">
+  <img src="/rory_client/images/architecture_worker_2.svg" alt="Worker Component Architecture" width="50%">
 </p>
 
 The **Worker** component is the execution engine of the PPDMaaS platform. It applies a catalog of Privacy-Preserving Data Mining methods directly to encrypted data, ensuring privacy throughout the analysis process without ever needing to decrypt the data. Workers are scalable and dynamically adapt to workload variations.
