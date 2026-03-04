@@ -4,7 +4,11 @@ icon: material/sitemap
 
 <!-- # Platform Architecture -->
 
-![General Interaction Architecture](/rory_client/images/efficiency_and_elasticit.svg)
+<!-- ![General Interaction Architecture](/rory_client/images/efficiency_and_elasticity.svg) -->
+<p align="center">
+  <img src="/rory_client/images/efficiency_and_elasticity.svg" alt="General Interaction Architecture" width="100%">
+</p>
+
 
 ## 1. General Interaction Model
 
