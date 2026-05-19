@@ -2,3 +2,6 @@
 dist/
 *.lock
 site/
+AGENTS.md
+.pytest_cache/
+.cache

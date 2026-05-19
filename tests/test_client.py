@@ -418,3 +418,85 @@ def test_sknn_pqc_predict():
         response = result.unwrap()
         print("SKNN PQC PREDICT RESULT",response.label_vector)
     assert result.is_ok
+
+
+@pytest.mark.skip("Logistic Regression Train")
+def test_logistic_regression_train():
+    result = client.logistic_regression_train(
+        plaintext_matrix_train_id="logreg1",
+        plaintext_matrix_train_filename="classificationc0r10a5k20model",
+        plaintext_label_vector_train_id="logreg1",
+        plaintext_label_vector_train_filename="classificationc0r10a5k20modellabels",
+        extension="npy",
+        epochs=1,
+        learning_rate=0.01,
+    )
+    assert result.is_ok
+
+
+@pytest.mark.skip("Logistic Regression Predict")
+def test_logistic_regression_predict():
+    result = client.logistic_regression_predict(
+        plaintext_matrix_train_id="logreg1",
+        plaintext_matrix_test_id="logreg1",
+        plaintext_matrix_test_filename="classificationc0r10a5k20data",
+        extension="npy",
+    )
+    assert result.is_ok
+
+
+@pytest.mark.skip("Logistic Regression Complete")
+def test_logistic_regression():
+    result = client.logistic_regression(
+        plaintext_matrix_train_id="logreg1",
+        plaintext_matrix_train_filename="classificationc0r10a5k20model",
+        plaintext_label_vector_train_id="logreg1",
+        plaintext_label_vector_train_filename="classificationc0r10a5k20modellabels",
+        plaintext_matrix_test_id="logreg1",
+        plaintext_matrix_test_filename="classificationc0r10a5k20data",
+        extension="npy",
+        epochs=1,
+        learning_rate=0.01,
+    )
+    assert result.is_ok
+
+
+@pytest.mark.skip("PPLR Train")
+def test_pplr_train():
+    result = client.pplr_train(
+        plaintext_matrix_train_id="pplr1",
+        plaintext_matrix_train_filename="classificationc0r10a5k20model",
+        plaintext_label_vector_train_id="pplr1",
+        plaintext_label_vector_train_filename="classificationc0r10a5k20modellabels",
+        extension="npy",
+        epochs=1,
+        learning_rate=0.01,
+    )
+    assert result.is_ok
+
+
+@pytest.mark.skip("PPLR Predict")
+def test_pplr_predict():
+    result = client.pplr_predict(
+        plaintext_matrix_train_id="pplr1",
+        plaintext_matrix_test_id="pplr1",
+        plaintext_matrix_test_filename="classificationc0r10a5k20data",
+        extension="npy",
+    )
+    assert result.is_ok
+
+
+@pytest.mark.skip("PPLR Complete")
+def test_pplr():
+    result = client.pplr(
+        plaintext_matrix_train_id="pplr1",
+        plaintext_matrix_train_filename="classificationc0r10a5k20model",
+        plaintext_label_vector_train_id="pplr1",
+        plaintext_label_vector_train_filename="classificationc0r10a5k20modellabels",
+        plaintext_matrix_test_id="pplr1",
+        plaintext_matrix_test_filename="classificationc0r10a5k20data",
+        extension="npy",
+        epochs=1,
+        learning_rate=0.01,
+    )
+    assert result.is_ok

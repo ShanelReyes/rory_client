@@ -199,6 +199,7 @@ class RoryClient(object):
         self.knn_pqc_url        = f"{self.classification_url}/pqc/knn"
         self.sknn_pqc_url       = f"{self.classification_url}/pqc/sknn"
         self.distributed_url    = f"{self.uri}/distributed"
+        self.machine_learning_url = f"{self.uri}/machine-learning"
         self.timeout = timeout
 
     def segment(self,dto:SegmentDTO):
@@ -1224,6 +1225,200 @@ class RoryClient(object):
             # return predict_result
         except Exception as e:
             return Err(e)
+
+    def logistic_regression_train(self,
+        plaintext_matrix_train_id: str,
+        plaintext_matrix_train_filename: str,
+        plaintext_label_vector_train_id: str,
+        plaintext_label_vector_train_filename: str,
+        extension: str = "npy",
+        epochs: int = 1,
+        learning_rate: float = 0.01,
+    ) -> Result[LogisticRegressionTrainResponse, Exception]:
+        try:
+            headers = {
+                "Experiment-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Train-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Train-Filename": plaintext_matrix_train_filename,
+                "Plaintext-Label-Vector-Train-Id": plaintext_label_vector_train_id,
+                "Plaintext-Label-Vector-Train-Filename": plaintext_label_vector_train_filename,
+                "Extension": extension,
+                "Epochs": str(epochs),
+                "Learning-Rate": str(learning_rate),
+            }
+            response = R.post(f"{self.machine_learning_url}/logistic-regression/train", headers=headers, timeout=self.timeout)
+            response.raise_for_status()
+            data = LogisticRegressionTrainResponse.model_validate(response.json())
+            return Ok(data)
+        except Exception as e:
+            return Err(e)
+
+    def logistic_regression_predict(self,
+        plaintext_matrix_train_id: str,
+        plaintext_matrix_test_id: str,
+        plaintext_matrix_test_filename: str,
+        extension: str = "npy",
+    ) -> Result[LogisticRegressionPredictResponse, Exception]:
+        try:
+            headers = {
+                "Experiment-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Train-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Test-Id": plaintext_matrix_test_id,
+                "Plaintext-Matrix-Test-Filename": plaintext_matrix_test_filename,
+                "Extension": extension,
+            }
+            response = R.post(f"{self.machine_learning_url}/logistic-regression/predict", headers=headers, timeout=self.timeout)
+            response.raise_for_status()
+            data = LogisticRegressionPredictResponse.model_validate(response.json())
+            return Ok(data)
+        except Exception as e:
+            return Err(e)
+
+    def logistic_regression(self,
+        plaintext_matrix_train_id: str,
+        plaintext_matrix_train_filename: str,
+        plaintext_label_vector_train_id: str,
+        plaintext_label_vector_train_filename: str,
+        plaintext_matrix_test_id: str,
+        plaintext_matrix_test_filename: str,
+        extension: str = "npy",
+        epochs: int = 1,
+        learning_rate: float = 0.01,
+    ) -> Result[LogisticRegressionResponse, Exception]:
+        try:
+            train_result = self.logistic_regression_train(
+                plaintext_matrix_train_id=plaintext_matrix_train_id,
+                plaintext_matrix_train_filename=plaintext_matrix_train_filename,
+                plaintext_label_vector_train_id=plaintext_label_vector_train_id,
+                plaintext_label_vector_train_filename=plaintext_label_vector_train_filename,
+                extension=extension,
+                epochs=epochs,
+                learning_rate=learning_rate,
+            )
+            if train_result.is_err:
+                return train_result
+            train_response = train_result.unwrap()
+
+            predict_result = self.logistic_regression_predict(
+                plaintext_matrix_train_id=plaintext_matrix_train_id,
+                plaintext_matrix_test_id=plaintext_matrix_test_id,
+                plaintext_matrix_test_filename=plaintext_matrix_test_filename,
+                extension=extension,
+            )
+            if predict_result.is_err:
+                return predict_result
+            predict_response = predict_result.unwrap()
+
+            return Ok(LogisticRegressionResponse.model_validate({
+                "algorithm": "LOGISTIC_REGRESSION",
+                "label_vector": predict_response.label_vector,
+                "worker_id": predict_response.worker_id,
+                "service_time_manager": predict_response.service_time_manager,
+                "service_time_worker": predict_response.service_time_worker,
+                "service_time_client": predict_response.service_time_client,
+                "service_time_predict": predict_response.service_time_predict,
+                "service_time_train": train_response.service_time_train,
+            }))
+        except Exception as e:
+            return Err(e)
+
+    def pplr_train(self,
+        plaintext_matrix_train_id: str,
+        plaintext_matrix_train_filename: str,
+        plaintext_label_vector_train_id: str,
+        plaintext_label_vector_train_filename: str,
+        extension: str = "npy",
+        epochs: int = 1,
+        learning_rate: float = 0.01,
+    ) -> Result[PPLRTrainResponse, Exception]:
+        try:
+            headers = {
+                "Experiment-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Train-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Train-Filename": plaintext_matrix_train_filename,
+                "Plaintext-Label-Vector-Train-Id": plaintext_label_vector_train_id,
+                "Plaintext-Label-Vector-Train-Filename": plaintext_label_vector_train_filename,
+                "Extension": extension,
+                "Epochs": str(epochs),
+                "Learning-Rate": str(learning_rate),
+            }
+            response = R.post(f"{self.machine_learning_url}/pplr/train", headers=headers, timeout=self.timeout)
+            response.raise_for_status()
+            data = PPLRTrainResponse.model_validate(response.json())
+            return Ok(data)
+        except Exception as e:
+            return Err(e)
+
+    def pplr_predict(self,
+        plaintext_matrix_train_id: str,
+        plaintext_matrix_test_id: str,
+        plaintext_matrix_test_filename: str,
+        extension: str = "npy",
+    ) -> Result[PPLRPredictResponse, Exception]:
+        try:
+            headers = {
+                "Experiment-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Train-Id": plaintext_matrix_train_id,
+                "Plaintext-Matrix-Test-Id": plaintext_matrix_test_id,
+                "Plaintext-Matrix-Test-Filename": plaintext_matrix_test_filename,
+                "Extension": extension,
+            }
+            response = R.post(f"{self.machine_learning_url}/pplr/predict", headers=headers, timeout=self.timeout)
+            response.raise_for_status()
+            data = PPLRPredictResponse.model_validate(response.json())
+            return Ok(data)
+        except Exception as e:
+            return Err(e)
+
+    def pplr(self,
+        plaintext_matrix_train_id: str,
+        plaintext_matrix_train_filename: str,
+        plaintext_label_vector_train_id: str,
+        plaintext_label_vector_train_filename: str,
+        plaintext_matrix_test_id: str,
+        plaintext_matrix_test_filename: str,
+        extension: str = "npy",
+        epochs: int = 1,
+        learning_rate: float = 0.01,
+    ) -> Result[PPLRResponse, Exception]:
+        try:
+            train_result = self.pplr_train(
+                plaintext_matrix_train_id=plaintext_matrix_train_id,
+                plaintext_matrix_train_filename=plaintext_matrix_train_filename,
+                plaintext_label_vector_train_id=plaintext_label_vector_train_id,
+                plaintext_label_vector_train_filename=plaintext_label_vector_train_filename,
+                extension=extension,
+                epochs=epochs,
+                learning_rate=learning_rate,
+            )
+            if train_result.is_err:
+                return train_result
+            train_response = train_result.unwrap()
+
+            predict_result = self.pplr_predict(
+                plaintext_matrix_train_id=plaintext_matrix_train_id,
+                plaintext_matrix_test_id=plaintext_matrix_test_id,
+                plaintext_matrix_test_filename=plaintext_matrix_test_filename,
+                extension=extension,
+            )
+            if predict_result.is_err:
+                return predict_result
+            predict_response = predict_result.unwrap()
+
+            return Ok(PPLRResponse.model_validate({
+                "algorithm": "PPLR",
+                "label_vector": predict_response.label_vector,
+                "worker_id": predict_response.worker_id,
+                "epochs": train_response.epochs,
+                "service_time_manager": predict_response.service_time_manager,
+                "service_time_worker": predict_response.service_time_worker,
+                "service_time_client": predict_response.service_time_client,
+                "service_time_predict": predict_response.service_time_predict,
+                "service_time_train": train_response.service_time_train,
+            }))
+        except Exception as e:
+            return Err(e)
+
 
 if __name__ == "__main__":
     rc = RoryClient(hostname="localhost",port=3000)

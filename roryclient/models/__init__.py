@@ -123,3 +123,65 @@ class NncResponse(BaseModel):
     service_time_worker:float
     service_time_client:float
     response_time_clustering:float
+
+
+class LogisticRegressionTrainResponse(BaseModel):
+    algorithm: str
+    worker_id: str
+    service_time_manager: float
+    service_time_worker: float
+    service_time_client: float
+    service_time_train: float
+
+
+class LogisticRegressionPredictResponse(BaseModel):
+    label_vector: List[int]
+    algorithm: str
+    worker_id: str
+    service_time_manager: float
+    service_time_worker: float
+    service_time_client: float
+    service_time_predict: float
+
+
+class LogisticRegressionResponse(BaseModel):
+    algorithm: str
+    label_vector: List[int]
+    worker_id: str
+    service_time_manager: float
+    service_time_worker: float
+    service_time_client: float
+    service_time_predict: float
+    service_time_train: float
+
+
+class PPLRTrainResponse(BaseModel):
+    algorithm: str
+    epochs: int
+    worker_id: str
+    service_time_manager: float
+    service_time_worker: float
+    service_time_client: float
+    service_time_train: float
+
+
+class PPLRPredictResponse(BaseModel):
+    label_vector: List[int]
+    algorithm: str
+    worker_id: str
+    service_time_manager: float
+    service_time_worker: float
+    service_time_client: float
+    service_time_predict: float
+
+
+class PPLRResponse(BaseModel):
+    algorithm: str
+    label_vector: List[int]
+    worker_id: str
+    epochs: int
+    service_time_manager: float
+    service_time_worker: float
+    service_time_client: float
+    service_time_predict: float
+    service_time_train: float
